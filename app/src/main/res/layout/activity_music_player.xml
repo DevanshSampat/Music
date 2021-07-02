@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    tools:context=".MusicPlayerActivity">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        app:cardCornerRadius="35dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:id="@+id/play_pause"
+        app:cardElevation="5dp"
+        app:cardBackgroundColor="#DDDDDD"
+        android:layout_marginBottom="60dp">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/play_pause_image"
+            android:src="@drawable/ic_baseline_pause_24"
+            android:layout_margin="15dp"/>
+    </androidx.cardview.widget.CardView>
+    <androidx.cardview.widget.CardView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignBottom="@id/play_pause"
+        app:cardCornerRadius="25dp"
+        android:layout_marginEnd="30dp"
+        android:id="@+id/previous"
+        android:layout_toStartOf="@id/play_pause"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:cardElevation="5dp"
+        app:cardBackgroundColor="#DDDDDD"
+        android:layout_marginBottom="10dp">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_baseline_skip_previous_24"
+            android:layout_margin="15dp"/>
+    </androidx.cardview.widget.CardView>
+    <androidx.cardview.widget.CardView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignBottom="@id/play_pause"
+        app:cardCornerRadius="25dp"
+        android:layout_marginStart="30dp"
+        android:id="@+id/next"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:layout_toEndOf="@id/play_pause"
+        app:cardElevation="5dp"
+        app:cardBackgroundColor="#DDDDDD"
+        android:layout_marginBottom="10dp">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_baseline_skip_next_24"
+            android:layout_margin="15dp"/>
+    </androidx.cardview.widget.CardView>
+
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_toStartOf="@id/previous"
+        android:layout_alignBottom="@id/previous"
+        android:id="@+id/shuffle"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="10dp"
+        android:src="@drawable/ic_baseline_shuffle_24"/>
+
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_toEndOf="@id/next"
+        android:id="@+id/repeat"
+        android:layout_alignBottom="@id/next"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="10dp"
+        android:src="@drawable/ic_baseline_repeat_24"/>
+
+    <TextView
+        android:id="@+id/album"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/play_pause"
+        android:layout_marginHorizontal="25dp"
+        android:layout_marginBottom="45dp"
+        android:fontFamily="@font/roboto"
+        android:text="The Eagles"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textAlignment="center"
+        android:textColor="@android:color/darker_gray"
+        android:textStyle="bold"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/album"
+        android:layout_marginHorizontal="25dp"
+        android:layout_marginBottom="20dp"
+        android:ellipsize="end"
+        android:fontFamily="@font/roboto_medium"
+        android:maxLines="2"
+
+        android:text="Hotel California"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textFontWeight="400"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/current_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/title"
+        android:layout_marginStart="25dp"
+        android:layout_marginBottom="10dp"
+        android:fontFamily="@font/roboto"
+        android:text="02:30"
+        android:textStyle="bold"
+        android:textSize="14sp" />
+    <SeekBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/current_time"
+        android:id="@+id/seekbar"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginBottom="5dp"
+        android:progressTint="@android:color/black"
+        android:thumbTint="@color/black"
+        android:progress="50"/>
+
+    <TextView
+        android:id="@+id/total_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/title"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="25dp"
+        android:layout_marginBottom="10dp"
+        android:fontFamily="@font/roboto"
+        android:text="05:00"
+        android:textStyle="bold"
+        android:textSize="14sp" />
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@id/seekbar"
+        android:layout_below="@id/app_name"
+        android:id="@+id/image"
+        android:layout_marginVertical="50dp"
+        android:layout_marginHorizontal="25dp"
+        android:src="@drawable/music"/>
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/ic_baseline_arrow_back_ios_24"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:textSize="30sp"
+        android:id="@+id/app_name"
+        android:text="Music App"
+        android:fontFamily="@font/roboto_medium"
+        android:textColor="@android:color/black"/>
+</RelativeLayout>
