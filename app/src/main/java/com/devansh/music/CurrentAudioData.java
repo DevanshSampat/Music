@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.util.Log;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -12,6 +13,15 @@ public class CurrentAudioData {
     private static int position;
     private static ArrayList<AudioModel> audioModelArrayList;
     private static boolean shuffle;
+    private static String folder = "All";
+
+    public static String getFolder() {
+        return folder;
+    }
+
+    public static void setFolder(String folder) {
+        CurrentAudioData.folder = folder;
+    }
 
     public static ArrayList<AudioModel> getAudioModelArrayList() {
         return audioModelArrayList;

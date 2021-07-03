@@ -118,6 +118,11 @@ public class MusicPlayerActivity extends AppCompatActivity {
         nextReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                if(time+1000>System.currentTimeMillis()){
+                    time = System.currentTimeMillis();
+                    return;
+                }
+                time = System.currentTimeMillis();
                 findViewById(R.id.next).callOnClick();
                 sendBroadcast(new Intent("PLAYBACK_STATE_CHANGED"));
             }
@@ -125,6 +130,11 @@ public class MusicPlayerActivity extends AppCompatActivity {
         previousReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                if(time+1000>System.currentTimeMillis()){
+                    time = System.currentTimeMillis();
+                    return;
+                }
+                time = System.currentTimeMillis();
                 findViewById(R.id.previous).callOnClick();
                 sendBroadcast(new Intent("PLAYBACK_STATE_CHANGED"));
             }
@@ -184,7 +194,6 @@ public class MusicPlayerActivity extends AppCompatActivity {
                         sendBroadcast(new Intent("PLAYBACK_STATE_CHANGED"));
                         prepareSong();
                     }
-                    else Toast.makeText(MusicPlayerActivity.this, "Reached end of queue", Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -201,7 +210,6 @@ public class MusicPlayerActivity extends AppCompatActivity {
                         sendBroadcast(new Intent("PLAYBACK_STATE_CHANGED"));
                         prepareSong();
                     }
-                    else Toast.makeText(MusicPlayerActivity.this, "Reached start of queue", Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

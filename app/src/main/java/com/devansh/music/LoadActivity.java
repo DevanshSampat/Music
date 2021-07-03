@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -27,7 +29,13 @@ import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.flexbox.AlignItems;
+import com.google.android.flexbox.FlexDirection;
+import com.google.android.flexbox.FlexboxLayoutManager;
+import com.google.android.flexbox.JustifyContent;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -42,16 +50,55 @@ public class LoadActivity extends AppCompatActivity {
 
     private ArrayList<AudioModel> audioModels;
     private RecyclerView recyclerView;
+    private RecyclerView folderRecyclerView;
     private BroadcastReceiver loadReceiver;
+    private BroadcastReceiver folderChangedReceiver;
     private boolean isLoading;
+    private ArrayList<String> folders;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        NotificationChannel channel = new NotificationChannel("service",
+                "Service Notifications", NotificationManager.IMPORTANCE_LOW);
+        channel.setDescription("Turn off these notifications, it won't impact the app");
+        getSystemService(NotificationManager.class).createNotificationChannel(channel);
         startForegroundService(new Intent(this,MusicService.class));
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_load);
+        try {
+            FileInputStream fis = openFileInput("Folder.txt");
+            CurrentAudioData.setFolder(new BufferedReader(new InputStreamReader(fis)).readLine());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        folders = new ArrayList<>();
         recyclerView = findViewById(R.id.recycle);
+        folderRecyclerView = findViewById(R.id.folder_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
+        FlexboxLayoutManager flexboxLayoutManager = new FlexboxLayoutManager(this);
+        flexboxLayoutManager.setFlexDirection(FlexDirection.ROW);
+        flexboxLayoutManager.setJustifyContent(JustifyContent.FLEX_START);
+        flexboxLayoutManager.setAlignItems(AlignItems.FLEX_START);
+        folderRecyclerView.setLayoutManager(flexboxLayoutManager);
+        folderRecyclerView.setHasFixedSize(true);
+        ((TextView)findViewById(R.id.current_folder)).setText(CurrentAudioData.getFolder());
+        findViewById(R.id.current_folder).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(folderRecyclerView.getVisibility()==View.VISIBLE) folderRecyclerView.setVisibility(View.GONE);
+                else folderRecyclerView.setVisibility(View.VISIBLE);
+            }
+        });
+        folderChangedReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                findViewById(R.id.progress_circular).setVisibility(View.VISIBLE);
+                folderRecyclerView.setVisibility(View.GONE);
+                getAllAudioFiles();
+            }
+        };
         loadReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -61,6 +108,7 @@ public class LoadActivity extends AppCompatActivity {
                     }
                 };
         registerReceiver(loadReceiver,new IntentFilter("MUSIC_LIST_PREPARED"));
+        registerReceiver(folderChangedReceiver,new IntentFilter("FOLDER_CHANGED"));
         if(CurrentAudioData.getAudioModelArrayList()!=null) sendBroadcast(new Intent("MUSIC_LIST_PREPARED"));
         getAllAudioFiles();
     }
@@ -70,8 +118,10 @@ public class LoadActivity extends AppCompatActivity {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},99);
             return;
         }
+        ((TextView)findViewById(R.id.current_folder)).setText(CurrentAudioData.getFolder());
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         String[] projection;
+        folders.clear();
         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.R){
             projection = new String[]{
                     MediaStore.Audio.AudioColumns.DATA,
@@ -116,7 +166,12 @@ public class LoadActivity extends AppCompatActivity {
                             } catch (FileNotFoundException e) {
                                 e.printStackTrace();
                             }
-                            audioModels.add(audioModel);
+                            if(!folders.contains("All")) folders.add("All");
+                            String str = audioModel.getPath();
+                            str = str.substring(0,str.lastIndexOf('/'));
+                            str = str.substring(str.lastIndexOf('/')+1);
+                            if(!folders.contains(str)) folders.add(str);
+                            if(str.equals(CurrentAudioData.getFolder())||CurrentAudioData.getFolder().equals("All")) audioModels.add(audioModel);
                             Log.println(Log.ASSERT,"duration",duration+" ms");
                         }
                         AudioModel[] audioModelArray = new AudioModel[audioModels.size()];
@@ -151,6 +206,12 @@ public class LoadActivity extends AppCompatActivity {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                setUpFolders();
+                            }
+                        });
                     }
                 }).start();
             }
@@ -206,7 +267,12 @@ public class LoadActivity extends AppCompatActivity {
                             } catch (FileNotFoundException e) {
                                 e.printStackTrace();
                             }
-                            audioModels.add(audioModel);
+                            if(!folders.contains("All")) folders.add("All");
+                            String str = audioModel.getPath();
+                            str = str.substring(0,str.lastIndexOf('/'));
+                            str = str.substring(str.lastIndexOf('/')+1);
+                            if(!folders.contains(str)) folders.add(str);
+                            if(str.equals(CurrentAudioData.getFolder())||CurrentAudioData.getFolder().equals("All")) audioModels.add(audioModel);
                             Log.println(Log.ASSERT,"duration",duration+" ms");
                         }
                         AudioModel[] audioModelArray = new AudioModel[audioModels.size()];
@@ -241,10 +307,21 @@ public class LoadActivity extends AppCompatActivity {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                setUpFolders();
+                            }
+                        });
                     }
                 }).start();
             }
         }
+    }
+    private void setUpFolders(){
+        FolderAdapter folderAdapter = new FolderAdapter();
+        folderAdapter.setFolders(folders);
+        folderRecyclerView.setAdapter(folderAdapter);
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
