@@ -96,10 +96,10 @@ public class MusicService extends Service {
                     try {
                         switch (keyEvent.getKeyCode()) {
                             case KeyEvent.KEYCODE_MEDIA_PLAY:
-                                CurrentAudioData.getMediaPlayer().start();
+                                sendBroadcast(new Intent("PLAY"));
                                 break;
                             case KeyEvent.KEYCODE_MEDIA_PAUSE:
-                                CurrentAudioData.getMediaPlayer().pause();
+                                sendBroadcast(new Intent("PAUSE"));
                                 break;
                             case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
                                 sendBroadcast(new Intent("TOGGLE"));
