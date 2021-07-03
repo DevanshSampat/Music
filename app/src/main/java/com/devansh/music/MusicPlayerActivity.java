@@ -338,6 +338,10 @@ public class MusicPlayerActivity extends AppCompatActivity {
 
     private void countTime() {
         try{
+            ((TextView)findViewById(R.id.title)).setText(CurrentAudioData.getAudioModelArrayList().get(CurrentAudioData.getPosition()).getName());
+            ((TextView)findViewById(R.id.album)).setText(CurrentAudioData.getAudioModelArrayList().get(CurrentAudioData.getPosition()).getAlbum());
+            if(CurrentAudioData.getAudioModelArrayList().get(CurrentAudioData.getPosition()).getCover()!=null) ((ImageView)findViewById(R.id.image)).setImageBitmap(CurrentAudioData.getAudioModelArrayList().get(CurrentAudioData.getPosition()).getCover());
+            else ((ImageView)findViewById(R.id.image)).setImageResource(R.drawable.music);
             if(!seeking) {
                 if(mediaPlayer.isPlaying()) ((ImageView)findViewById(R.id.play_pause_image)).setImageResource(R.drawable.ic_baseline_pause_24);
                 else ((ImageView)findViewById(R.id.play_pause_image)).setImageResource(R.drawable.ic_baseline_play_arrow_24);
@@ -429,4 +433,5 @@ public class MusicPlayerActivity extends AppCompatActivity {
             }
         }
     }
+
 }
