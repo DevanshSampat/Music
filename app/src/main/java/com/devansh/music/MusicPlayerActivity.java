@@ -122,6 +122,8 @@ public class MusicPlayerActivity extends AppCompatActivity {
                     time = System.currentTimeMillis();
                     return;
                 }
+                mediaPlayer.seekTo(0);
+                mediaPlayer.stop();
                 time = System.currentTimeMillis();
                 findViewById(R.id.next).callOnClick();
                 sendBroadcast(new Intent("PLAYBACK_STATE_CHANGED"));
@@ -134,6 +136,8 @@ public class MusicPlayerActivity extends AppCompatActivity {
                     time = System.currentTimeMillis();
                     return;
                 }
+                mediaPlayer.seekTo(0);
+                mediaPlayer.stop();
                 time = System.currentTimeMillis();
                 findViewById(R.id.previous).callOnClick();
                 sendBroadcast(new Intent("PLAYBACK_STATE_CHANGED"));
@@ -161,6 +165,7 @@ public class MusicPlayerActivity extends AppCompatActivity {
         registerReceiver(playReceiver,new IntentFilter("PLAY"));
         registerReceiver(pauseReceiver,new IntentFilter("PAUSE"));
         registerReceiver(pauseReceiver,new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED));
+        registerReceiver(pauseReceiver,new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED));
         registerReceiver(playPauseReceiver,new IntentFilter("TOGGLE"));
         registerReceiver(previousReceiver,new IntentFilter("PREVIOUS"));
         registerReceiver(nextReceiver,new IntentFilter("NEXT"));

@@ -171,7 +171,13 @@ public class LoadActivity extends AppCompatActivity {
                             str = str.substring(0,str.lastIndexOf('/'));
                             str = str.substring(str.lastIndexOf('/')+1);
                             if(!folders.contains(str)) folders.add(str);
-                            if(str.equals(CurrentAudioData.getFolder())||CurrentAudioData.getFolder().equals("All")) audioModels.add(audioModel);
+                            try {
+                                if (str.equals(CurrentAudioData.getFolder()) || CurrentAudioData.getFolder().equals("All"))
+                                    audioModels.add(audioModel);
+                            } catch (Exception e) {
+                                finish();
+                                return;
+                            }
                             Log.println(Log.ASSERT,"duration",duration+" ms");
                         }
                         AudioModel[] audioModelArray = new AudioModel[audioModels.size()];
@@ -272,7 +278,13 @@ public class LoadActivity extends AppCompatActivity {
                             str = str.substring(0,str.lastIndexOf('/'));
                             str = str.substring(str.lastIndexOf('/')+1);
                             if(!folders.contains(str)) folders.add(str);
-                            if(str.equals(CurrentAudioData.getFolder())||CurrentAudioData.getFolder().equals("All")) audioModels.add(audioModel);
+                            try {
+                                if (str.equals(CurrentAudioData.getFolder()) || CurrentAudioData.getFolder().equals("All"))
+                                    audioModels.add(audioModel);
+                            } catch (Exception e) {
+                                finish();
+                                return;
+                            }
                             Log.println(Log.ASSERT,"duration",duration+" ms");
                         }
                         AudioModel[] audioModelArray = new AudioModel[audioModels.size()];
@@ -338,6 +350,17 @@ public class LoadActivity extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
+        audioModels = CurrentAudioData.getAudioModelArrayList();
+        if(audioModels!=null){
+            if(!folders.contains("All")) folders.add("All");
+            for(AudioModel audioModel : audioModels) {
+                String str = audioModel.getPath();
+                str = str.substring(0, str.lastIndexOf('/'));
+                str = str.substring(str.lastIndexOf('/') + 1);
+                if (!folders.contains(str)) folders.add(str);
+            }
+            setUpFolders();
+        }
         sendBroadcast(new Intent("MUSIC_LIST_PREPARED"));
     }
 }
