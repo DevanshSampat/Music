@@ -182,8 +182,6 @@ public class MusicPlayerActivity extends AppCompatActivity {
                         songNumber++;
                         CurrentAudioData.setPosition(songNumber);
                         sendBroadcast(new Intent("PLAYBACK_STATE_CHANGED"));
-                        unregisterReceiver(previousReceiver);
-                        unregisterReceiver(nextReceiver);
                         prepareSong();
                     }
                     else Toast.makeText(MusicPlayerActivity.this, "Reached end of queue", Toast.LENGTH_SHORT).show();
@@ -201,8 +199,6 @@ public class MusicPlayerActivity extends AppCompatActivity {
                         songNumber--;
                         CurrentAudioData.setPosition(songNumber);
                         sendBroadcast(new Intent("PLAYBACK_STATE_CHANGED"));
-                        unregisterReceiver(previousReceiver);
-                        unregisterReceiver(nextReceiver);
                         prepareSong();
                     }
                     else Toast.makeText(MusicPlayerActivity.this, "Reached start of queue", Toast.LENGTH_SHORT).show();
@@ -381,6 +377,12 @@ public class MusicPlayerActivity extends AppCompatActivity {
         }
     }
     private void prepareSong(){
+        try{
+            unregisterReceiver(previousReceiver);
+            unregisterReceiver(nextReceiver);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         ((TextView)findViewById(R.id.title)).setText(CurrentAudioData.getAudioModelArrayList().get(CurrentAudioData.getPosition()).getName());
         ((TextView)findViewById(R.id.album)).setText(CurrentAudioData.getAudioModelArrayList().get(CurrentAudioData.getPosition()).getAlbum());
         if(CurrentAudioData.getAudioModelArrayList().get(CurrentAudioData.getPosition()).getCover()!=null) ((ImageView)findViewById(R.id.image)).setImageBitmap(CurrentAudioData.getAudioModelArrayList().get(CurrentAudioData.getPosition()).getCover());
