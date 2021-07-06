@@ -116,7 +116,7 @@ public class MusicService extends Service {
                         e.printStackTrace();
                     }
                 }
-                return true;
+                return false;
             }
 
             @Override
@@ -132,13 +132,11 @@ public class MusicService extends Service {
             @Override
             public void onPause() {
                 super.onPause();
-                CurrentAudioData.getMediaPlayer().pause();
             }
 
             @Override
             public void onPlay() {
                 super.onPlay();
-                CurrentAudioData.getMediaPlayer().start();
             }
 
             @Override
@@ -152,6 +150,7 @@ public class MusicService extends Service {
                         .build()
                 );
             }
+
         };
         mediaSession.setCallback(callback);
     }
@@ -178,6 +177,7 @@ public class MusicService extends Service {
             builder.putString(MediaMetadata.METADATA_KEY_ALBUM, audioModel.getAlbum());
             builder.putString(MediaMetadata.METADATA_KEY_ARTIST, audioModel.getArtist());
             builder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, audioModel.getName());
+            builder.putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE,audioModel.getArtist());
             mediaSession.setMetadata(builder.build());
             MediaPlayer mediaPlayer = CurrentAudioData.getMediaPlayer();
             if (mediaPlayer.isPlaying()) playbackStateCode = PlaybackStateCompat.STATE_PLAYING;

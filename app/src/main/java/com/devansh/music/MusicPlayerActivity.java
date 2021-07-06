@@ -3,6 +3,7 @@ package com.devansh.music;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationManagerCompat;
 
+import android.app.ActivityManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.bluetooth.BluetoothDevice;
@@ -18,6 +19,7 @@ import android.os.Handler;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -101,7 +103,9 @@ public class MusicPlayerActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 try {
                     mediaPlayer.pause();
+                    ComponentName componentName = ((ActivityManager)context.getSystemService(ACTIVITY_SERVICE)).getRecentTasks(1,0).get(0).topActivity;
                     sendBroadcast(new Intent("PLAYBACK_STATE_CHANGED"));
+                    Log.println(Log.ASSERT,"state","PAUSE "+componentName.toString());
                 }catch (Exception e){}
             }
         };
@@ -117,11 +121,12 @@ public class MusicPlayerActivity extends AppCompatActivity {
         };
         nextReceiver = new BroadcastReceiver() {
             @Override
-            public void onReceive(Context context, Intent intent) {
+            public synchronized void onReceive(Context context, Intent intent) {
                 if(time+1000>System.currentTimeMillis()){
                     time = System.currentTimeMillis();
                     return;
                 }
+                Log.println(Log.ASSERT,"state","NEXT");
                 mediaPlayer.seekTo(0);
                 mediaPlayer.stop();
                 time = System.currentTimeMillis();
@@ -131,7 +136,7 @@ public class MusicPlayerActivity extends AppCompatActivity {
         };
         previousReceiver = new BroadcastReceiver() {
             @Override
-            public void onReceive(Context context, Intent intent) {
+            public synchronized void onReceive(Context context, Intent intent) {
                 if(time+1000>System.currentTimeMillis()){
                     time = System.currentTimeMillis();
                     return;
@@ -143,25 +148,6 @@ public class MusicPlayerActivity extends AppCompatActivity {
                 sendBroadcast(new Intent("PLAYBACK_STATE_CHANGED"));
             }
         };
-        BroadcastReceiver turnOffReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                try{
-                    mediaPlayer.release();
-                    getApplicationContext().unregisterReceiver(playReceiver);
-                    getApplicationContext().unregisterReceiver(pauseReceiver);
-                    getApplicationContext().unregisterReceiver(playPauseReceiver);
-                    getApplicationContext().unregisterReceiver(nextReceiver);
-                    getApplicationContext().unregisterReceiver(previousReceiver);
-                    ((ImageView)findViewById(R.id.play_pause_image)).setImageResource(R.drawable.ic_baseline_play_arrow_24);
-                    ((TelephonyManager)getSystemService(TELEPHONY_SERVICE)).listen(phoneIncomingCallListener, PhoneStateListener.LISTEN_NONE);
-                    finish();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-        registerReceiver(turnOffReceiver,new IntentFilter("STOP"));
         registerReceiver(playReceiver,new IntentFilter("PLAY"));
         registerReceiver(pauseReceiver,new IntentFilter("PAUSE"));
         registerReceiver(pauseReceiver,new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED));
@@ -169,6 +155,25 @@ public class MusicPlayerActivity extends AppCompatActivity {
         registerReceiver(playPauseReceiver,new IntentFilter("TOGGLE"));
         registerReceiver(previousReceiver,new IntentFilter("PREVIOUS"));
         registerReceiver(nextReceiver,new IntentFilter("NEXT"));
+        BroadcastReceiver turnOffReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                try{
+                    mediaPlayer.release();
+                    MusicPlayerActivity.this.unregisterReceiver(playReceiver);
+                    MusicPlayerActivity.this.unregisterReceiver(pauseReceiver);
+                    MusicPlayerActivity.this.unregisterReceiver(playPauseReceiver);
+                    MusicPlayerActivity.this.unregisterReceiver(nextReceiver);
+                    MusicPlayerActivity.this.unregisterReceiver(previousReceiver);
+                    ((ImageView)findViewById(R.id.play_pause_image)).setImageResource(R.drawable.ic_baseline_play_arrow_24);
+                    ((TelephonyManager)getSystemService(TELEPHONY_SERVICE)).listen(phoneIncomingCallListener, PhoneStateListener.LISTEN_NONE);
+                    onBackPressed();
+                } catch (Exception e) {
+                    Log.println(Log.ASSERT,"error",e.getMessage());
+                }
+            }
+        };
+        registerReceiver(turnOffReceiver,new IntentFilter("STOP"));
         ((TelephonyManager)getSystemService(TELEPHONY_SERVICE)).listen(phoneIncomingCallListener, PhoneStateListener.LISTEN_CALL_STATE);
         NotificationChannel channel = new NotificationChannel("general",
                 "General", NotificationManager.IMPORTANCE_LOW);
@@ -196,9 +201,9 @@ public class MusicPlayerActivity extends AppCompatActivity {
                     if(songNumber<audioModelArrayList.size()-1){
                         songNumber++;
                         CurrentAudioData.setPosition(songNumber);
-                        sendBroadcast(new Intent("PLAYBACK_STATE_CHANGED"));
                         prepareSong();
                     }
+                    sendBroadcast(new Intent("PLAYBACK_STATE_CHANGED"));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -212,9 +217,9 @@ public class MusicPlayerActivity extends AppCompatActivity {
                     if(songNumber>0){
                         songNumber--;
                         CurrentAudioData.setPosition(songNumber);
-                        sendBroadcast(new Intent("PLAYBACK_STATE_CHANGED"));
                         prepareSong();
                     }
+                    sendBroadcast(new Intent("PLAYBACK_STATE_CHANGED"));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

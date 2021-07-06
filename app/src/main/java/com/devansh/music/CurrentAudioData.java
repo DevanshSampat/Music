@@ -68,6 +68,14 @@ public class CurrentAudioData {
                 audioModels[i] = audioModels[index];
                 audioModels[index] = temp;
             }
+            for(i=0;i<audioModels.length;i++) {
+                if (audioModels[i].getPath().equals(path)) {
+                    AudioModel temp = audioModels[i];
+                    audioModels[i] = audioModels[0];
+                    audioModels[0] = temp;
+                    break;
+                }
+            }
         }
         else{
            for(i=0;i<audioModels.length-1;i++){

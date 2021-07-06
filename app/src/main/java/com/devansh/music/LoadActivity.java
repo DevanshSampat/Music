@@ -113,6 +113,7 @@ public class LoadActivity extends AppCompatActivity {
         getAllAudioFiles();
     }
     private void getAllAudioFiles() {
+        Log.println(Log.ASSERT,"Checking","true");
         if(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)== PackageManager.PERMISSION_DENIED)
         {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},99);

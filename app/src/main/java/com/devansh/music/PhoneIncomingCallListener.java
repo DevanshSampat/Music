@@ -11,7 +11,8 @@ public class PhoneIncomingCallListener extends PhoneStateListener {
     public PhoneIncomingCallListener(Context context){this.context = context;}
     @Override
     public void onCallStateChanged(int state, String phoneNumber) {
-        if(state == TelephonyManager.CALL_STATE_RINGING) context.sendBroadcast(new Intent("PAUSE"));
-        else context.sendBroadcast(new Intent("PLAY"));
+        Log.println(Log.ASSERT,"call",state+"");
+        if(state == TelephonyManager.CALL_STATE_IDLE) context.sendBroadcast(new Intent("PLAY"));
+        else if(state==TelephonyManager.CALL_STATE_RINGING||state==TelephonyManager.CALL_STATE_OFFHOOK) context.sendBroadcast(new Intent("PAUSE"));
     }
 }
