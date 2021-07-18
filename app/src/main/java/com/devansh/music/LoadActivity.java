@@ -113,7 +113,6 @@ public class LoadActivity extends AppCompatActivity {
         getAllAudioFiles();
     }
     private void getAllAudioFiles() {
-        Log.println(Log.ASSERT,"Checking","true");
         if(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)== PackageManager.PERMISSION_DENIED)
         {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},99);
@@ -179,7 +178,6 @@ public class LoadActivity extends AppCompatActivity {
                                 finish();
                                 return;
                             }
-                            Log.println(Log.ASSERT,"duration",duration+" ms");
                         }
                         AudioModel[] audioModelArray = new AudioModel[audioModels.size()];
                         int i,j;
@@ -252,14 +250,18 @@ public class LoadActivity extends AppCompatActivity {
                             String artist = cursor.getString(7);
                             String duration = cursor.getString(8);
                             */
-                            String artist="",album="",duration="";
-                            MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
-                            Uri uriMusicFile = FileProvider.getUriForFile(getApplicationContext(),BuildConfig.APPLICATION_ID+".provider",
-                                    new File(path));
-                            mediaMetadataRetriever.setDataSource(LoadActivity.this,uriMusicFile);
-                            artist = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-                            album = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
-                            duration = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+                            String artist="<unknown>",album="<unknown>",duration="";
+                            try {
+                                MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
+                                Uri uriMusicFile = FileProvider.getUriForFile(getApplicationContext(), BuildConfig.APPLICATION_ID + ".provider",
+                                        new File(path));
+                                mediaMetadataRetriever.setDataSource(LoadActivity.this, uriMusicFile);
+                                artist = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+                                album = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+                                duration = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                             audioModel.setAlbum(album);
                             audioModel.setPath(path);
                             audioModel.setName(name);
@@ -286,7 +288,6 @@ public class LoadActivity extends AppCompatActivity {
                                 finish();
                                 return;
                             }
-                            Log.println(Log.ASSERT,"duration",duration+" ms");
                         }
                         AudioModel[] audioModelArray = new AudioModel[audioModels.size()];
                         int i,j;

@@ -16,6 +16,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
@@ -69,6 +70,7 @@ public class MusicPlayerActivity extends AppCompatActivity {
         if(CurrentAudioData.getAudioModelArrayList().get(CurrentAudioData.getPosition()).getCover()!=null) ((ImageView)findViewById(R.id.image)).setImageBitmap(CurrentAudioData.getAudioModelArrayList().get(CurrentAudioData.getPosition()).getCover());
         if(CurrentAudioData.getMediaPlayer()==null) {
             mediaPlayer = new MediaPlayer();
+            mediaPlayer.setWakeMode(this, PowerManager.PARTIAL_WAKE_LOCK);
             CurrentAudioData.setMediaPlayer(mediaPlayer);
         }
         mediaPlayer = CurrentAudioData.getMediaPlayer();
@@ -103,9 +105,7 @@ public class MusicPlayerActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 try {
                     mediaPlayer.pause();
-                    ComponentName componentName = ((ActivityManager)context.getSystemService(ACTIVITY_SERVICE)).getRecentTasks(1,0).get(0).topActivity;
                     sendBroadcast(new Intent("PLAYBACK_STATE_CHANGED"));
-                    Log.println(Log.ASSERT,"state","PAUSE "+componentName.toString());
                 }catch (Exception e){}
             }
         };
@@ -126,9 +126,6 @@ public class MusicPlayerActivity extends AppCompatActivity {
                     time = System.currentTimeMillis();
                     return;
                 }
-                Log.println(Log.ASSERT,"state","NEXT");
-                mediaPlayer.seekTo(0);
-                mediaPlayer.stop();
                 time = System.currentTimeMillis();
                 findViewById(R.id.next).callOnClick();
                 sendBroadcast(new Intent("PLAYBACK_STATE_CHANGED"));
@@ -150,8 +147,6 @@ public class MusicPlayerActivity extends AppCompatActivity {
         };
         registerReceiver(playReceiver,new IntentFilter("PLAY"));
         registerReceiver(pauseReceiver,new IntentFilter("PAUSE"));
-        registerReceiver(pauseReceiver,new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED));
-        registerReceiver(pauseReceiver,new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED));
         registerReceiver(playPauseReceiver,new IntentFilter("TOGGLE"));
         registerReceiver(previousReceiver,new IntentFilter("PREVIOUS"));
         registerReceiver(nextReceiver,new IntentFilter("NEXT"));
@@ -169,7 +164,6 @@ public class MusicPlayerActivity extends AppCompatActivity {
                     ((TelephonyManager)getSystemService(TELEPHONY_SERVICE)).listen(phoneIncomingCallListener, PhoneStateListener.LISTEN_NONE);
                     onBackPressed();
                 } catch (Exception e) {
-                    Log.println(Log.ASSERT,"error",e.getMessage());
                 }
             }
         };
@@ -292,7 +286,6 @@ public class MusicPlayerActivity extends AppCompatActivity {
                     e.printStackTrace();
                     registerReceiver(playReceiver,new IntentFilter("PLAY"));
                     registerReceiver(pauseReceiver,new IntentFilter("PAUSE"));
-                    registerReceiver(pauseReceiver,new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED));
                     registerReceiver(playPauseReceiver,new IntentFilter("TOGGLE"));
                     registerReceiver(previousReceiver,new IntentFilter("PREVIOUS"));
                     registerReceiver(nextReceiver,new IntentFilter("NEXT"));
@@ -411,6 +404,7 @@ public class MusicPlayerActivity extends AppCompatActivity {
         else ((ImageView)findViewById(R.id.image)).setImageResource(R.drawable.music);
         if(CurrentAudioData.getMediaPlayer()==null) {
             mediaPlayer = new MediaPlayer();
+            mediaPlayer.setWakeMode(this, PowerManager.PARTIAL_WAKE_LOCK);
             CurrentAudioData.setMediaPlayer(mediaPlayer);
         }
         mediaPlayer = CurrentAudioData.getMediaPlayer();
