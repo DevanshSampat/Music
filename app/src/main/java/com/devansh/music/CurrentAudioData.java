@@ -55,7 +55,12 @@ public class CurrentAudioData {
     public static void setShuffle(boolean shuffle) {
         CurrentAudioData.shuffle = shuffle;
         int i,j,tempInt = 0;
-        String path = audioModelArrayList.get(position).getPath();
+        String path = null;
+        try{
+             path = audioModelArrayList.get(position).getPath();
+        } catch (Exception e) {
+            return;
+        }
         AudioModel[] audioModels = new AudioModel[audioModelArrayList.size()];
         for (i=0;i<audioModelArrayList.size();i++) audioModels[i] = audioModelArrayList.get(i);
         if(shuffle){

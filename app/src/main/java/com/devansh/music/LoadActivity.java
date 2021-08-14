@@ -68,6 +68,7 @@ public class LoadActivity extends AppCompatActivity {
             FileInputStream fis = openFileInput("Folder.txt");
             CurrentAudioData.setFolder(new BufferedReader(new InputStreamReader(fis)).readLine());
         } catch (FileNotFoundException e) {
+            CurrentAudioData.setFolder("All");
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
